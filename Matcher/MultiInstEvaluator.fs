@@ -1,7 +1,7 @@
 ﻿namespace Matcher
 
 module MultiInstEvaluator =
-    open ProdLang
+    open Matcher.ProdLang
 
     type InstanceId = int
     type Environment = ((InstanceId * Variable) * Value) list
@@ -28,8 +28,29 @@ module MultiInstEvaluator =
         let evalCondMap objMap = Seq.fold (&&) true (Seq.map (fun c -> evalCond objMap env c) conds)
         Seq.filter (fun objMap -> (evalCondMap objMap) ) objMaps
 
+    let tryGetEvalEnvCond objMap (env:Environment) (Eq((objVar,var),value)) =
+        match Util.lookupOpt objMap objVar with
+            Some inst ->
+                if Seq.exists ((=) ((inst, var),value)) env then
+                     Some (inst,var, value)
+                else None
+            | None -> None
+
+    let tryGetEvalEnvConds conds env =
+        let insts = Seq.distinct <| Seq.map (fun ((instId,_),_) -> instId) env
+        let objMaps = getObjMaps conds insts
+        let rec tryGetEvalObjMapEnvConds conds' objMap =
+            match conds' with
+                [] -> Some []
+                | c::cs ->
+                    match tryGetEvalEnvCond objMap env c with
+                        Some s -> Option.bind (fun l -> Some (s::l)) (tryGetEvalObjMapEnvConds cs objMap)
+                        | None -> None
+        Seq.choose (tryGetEvalObjMapEnvConds conds) objMaps
+
     let evalState { env = env; system = {productions = productions}} =
-        Seq.map (fun (conds,prodName) -> (prodName,evalConds conds !env)) productions
+        (Seq.map (fun (conds,prodName) -> (prodName,evalConds conds !env)) productions,
+         Seq.map (fun (conds,prodName) -> (prodName,tryGetEvalEnvConds conds !env)) productions)
 
     let mkSystem prods = {productions = prods}
     
