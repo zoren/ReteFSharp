@@ -19,3 +19,5 @@ module ReteTester =
     let assignRete3() = assignReteInst0 "Z" "3"
     let assignRete4() = assignReteInst0 "V" "4"
     let assignRete5() = assignReteInst0 "U" "5"
+
+    let dumpProductionState () = getProductionNodes reteDummy

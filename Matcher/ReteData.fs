@@ -20,7 +20,7 @@ module ReteData =
     type NodeType = 
         Beta of BetaMemory
         | Join of joinData
-        | Production of string
+        | Production of string * (token * WME) list ref
     and joinData =
         {
             amem : alphaMemory option ref

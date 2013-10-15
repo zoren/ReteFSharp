@@ -8,7 +8,7 @@ module ReteBuilder =
 
     let mkRete nodeType children = {nodeType = nodeType;children = children;parent = mkNullParent ()}
      
-    let mkProd s = mkRete (Production s) []
+    let mkProd s = mkRete (Production (s, ref [])) []
     
     let mkTest (farg1,cond,farg2) = { fieldOfArg1 = farg1;conditionNumberOfArg2 = cond; fieldOfArg2 = farg2 }
     let mkTests _ = [] : testAtJoinNode list

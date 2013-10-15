@@ -60,18 +60,19 @@ module Runner =
 //            ()
 //        else
         match node with
-            {nodeType = Beta _} -> () // beta memories have no rigth activation
+            {nodeType = Beta _} -> failwith "cannot rigth activate beta memories"
             | {nodeType = Join _} -> joinNodeRightActivation(node, w)
-            | {nodeType = Production s} -> wrt2("Rigth activate " + s)
+            | {nodeType = Production _} -> failwith "cannot rigth activate production"
 
     and leftActivation(node,t,w) = 
         wrt "left"
         match node with
               {nodeType = Beta _} -> betaMemoryLeftActivation (node, t, w)
             | {nodeType = Join _} -> joinNodeLeftActivation (node, t)
-            | {nodeType = Production s} ->
+            | {nodeType = Production (s,matches)} ->
                 let pp {fields = (o,vr,vl)} = "(" + o + "|" + vr + "|" + vl + ")"
-                wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
+                let dump = wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
+                matches := (t,w) :: !matches
     
     and alphaMemoryActivation (node:alphaMemory, w:WME) = 
         node.items := w :: !node.items
@@ -82,3 +83,8 @@ module Runner =
         match Util.lookupOpt alphas (variable,value) with
             Some alphaMem -> alphaMemoryActivation(alphaMem, { fields = (inst,variable,value) })
             | None -> ()
+
+    let rec getProductionNodes ({nodeType = nodeType;children = children} as node) =
+        match nodeType with
+            Production (prodName,matches) -> (prodName,matches) :: List.collect getProductionNodes children
+            | _ -> List.collect getProductionNodes children
