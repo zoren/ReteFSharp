@@ -61,4 +61,6 @@ module ReteBuilder =
 
         let _ = setParents rete
         let _ = List.iter (fun (_,a)->setAlphaMen a) alphas
-        (rete,List.map (fun (Eq(objVar,value),mem) -> ((objVar,value),mem)) alphas)
+        (rete,List.map (fun (Eq((objVar,var),value),mem) -> ((var,value),mem)) alphas)
+
+    let buildReteFromProductions productions = buildSetParents <| buildTrie productions

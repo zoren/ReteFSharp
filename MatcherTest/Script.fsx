@@ -12,6 +12,7 @@
 //#load "ExampleProds.fs"
 
 #load "ProdLangEvalTester.fs"
+#load "ReteTester.fs"
 //#load "ReteTester.fs"
 
 // Define your library scripting code here
@@ -22,6 +23,7 @@
 //ass1 "V" 4
 //ass1 "U" 5
 open MatcherTest.ProdLangEvalTester
+
 ////
 ////open MatcherTest
 ////open MatcherTest.ExampleProds
@@ -32,3 +34,11 @@ assign2()
 //assign3()
 //assign4()
 //assign5()
+
+open MatcherTest.ReteTester
+
+assignRete3()
+assignRete2()
+assignRete5()
+assignRete4()
+assignRete1()

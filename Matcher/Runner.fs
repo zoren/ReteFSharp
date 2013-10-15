@@ -69,17 +69,16 @@ module Runner =
         match node with
               {nodeType = Beta _} -> betaMemoryLeftActivation (node, t, w)
             | {nodeType = Join _} -> joinNodeLeftActivation (node, t)
-            | {nodeType = Production s} -> wrt2 ("Left activate " + s)
+            | {nodeType = Production s} ->
+                let pp {fields = (o,vr,vl)} = "(" + o + "|" + vr + "|" + vl + ")"
+                wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
     
     and alphaMemoryActivation (node:alphaMemory, w:WME) = 
         node.items := w :: !node.items
         for child in node.successors do
             rigthActivation (child, w)
     
-    let mkVal var value = { fields = ("O",var,value) }
-    let activate alphaNode var value = alphaMemoryActivation(alphaNode, mkVal var value)
-
-    let activateCond alphas variable value = 
-        match Util.lookupOpt alphas (("O",variable),value) with
-            Some alphaMem -> activate alphaMem variable value
+    let activateCond alphas inst variable value =
+        match Util.lookupOpt alphas (variable,value) with
+            Some alphaMem -> alphaMemoryActivation(alphaMem, { fields = (inst,variable,value) })
             | None -> ()
