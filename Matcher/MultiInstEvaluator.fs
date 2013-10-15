@@ -20,11 +20,10 @@ module MultiInstEvaluator =
         
     let evalCond objMap (env:Environment) (Eq((objVar,var),value)) =
         let inst = Option.get <| Util.lookupOpt objMap objVar
-        let lookupValue = Option.get <| Util.lookupOpt env (inst, var)
-        lookupValue = value
+        (Util.lookupOpt env (inst, var)) = Some value
 
     let evalConds conds env =
-        let insts = List.map (fun ((instId,_),_) -> instId) env
+        let insts = Seq.distinct <| Seq.map (fun ((instId,_),_) -> instId) env
         let objMaps = getObjMaps conds insts
         let evalCondMap objMap = Seq.fold (&&) true (Seq.map (fun c -> evalCond objMap env c) conds)
         Seq.filter (fun objMap -> (evalCondMap objMap) ) objMaps
