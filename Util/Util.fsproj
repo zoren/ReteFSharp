@@ -5,13 +5,13 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>f676b119-518a-4578-928d-92b12fc1bb67</ProjectGuid>
+    <ProjectGuid>8550a6eb-6b7a-427d-9f60-7329195e9747</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Matcher</RootNamespace>
-    <AssemblyName>Matcher</AssemblyName>
+    <RootNamespace>Util</RootNamespace>
+    <AssemblyName>Util</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
-    <Name>Matcher</Name>
+    <Name>Util</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +21,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\Matcher.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Util.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +30,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\Matcher.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Util.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -42,21 +42,9 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ReteData.fs" />
-    <Compile Include="ProdLang.fs" />
-    <Compile Include="MultiInstEvaluator.fs" />
-    <Compile Include="ProdLangEval.fs" />
-    <Compile Include="ReteBuilder.fs" />
-    <Compile Include="Runner.fs" />
     <None Include="Script.fsx" />
-    <Compile Include="Dumper.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Util\Util.fsproj">
-      <Name>Util</Name>
-      <Project>{8550a6eb-6b7a-427d-9f60-7329195e9747}</Project>
-      <Private>True</Private>
-    </ProjectReference>
+    <Compile Include="Util.fs" />
+    <Compile Include="Trie.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
