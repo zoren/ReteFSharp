@@ -14,7 +14,7 @@ module Util =
     let rec lookupOpt l k =
         match l with
             [] -> None
-            | (k',v)::l' -> if k = k' then Some v else lookupOpt l' k            
+            | (k',v)::l' -> if k = k' then Some v else lookupOpt l' k
 
     let rec updateMany l k v =
         match l with
@@ -30,14 +30,14 @@ module Util =
                 match f x with
                     None -> mapPartial f xs
                     | Some v -> v :: mapPartial f xs
-    
+
     type order = LESS | EQUAL | GREATER
 
-    let compareOrder x y = (function | -1 -> LESS | 0 -> EQUAL | 1 -> GREATER ) <| compare x y 
+    let compareOrder x y = (function | -1 -> LESS | 0 -> EQUAL | 1 -> GREATER ) <| compare x y
     
     let binarySearch (assocArray:array<'key * 'value>) (key:'key) =
         let rec binS min max =
-            if max < min 
+            if max < min
                 then None
                 else
                     let middle = (max - min) / 2 + min

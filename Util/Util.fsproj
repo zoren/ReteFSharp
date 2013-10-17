@@ -42,7 +42,6 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Script.fsx" />
     <Compile Include="Util.fs" />
     <Compile Include="Trie.fs" />
   </ItemGroup>
