@@ -51,7 +51,8 @@ module MultiInstEvaluator =
     let evalState { env = env; system = {productions = productions}} =
         (Seq.map (fun (conds,prodName) -> (prodName,evalConds conds !env)) productions,
          Seq.map (fun (conds,prodName) -> (prodName,tryGetEvalEnvConds conds !env)) productions)
-
+    let evalStateList { env = env; system = {productions = productions}} : (string * (int * string * string) list list) list =
+        List.map (fun (conds,prodName) -> (prodName,Seq.toList <| tryGetEvalEnvConds conds !env)) productions
     let mkSystem prods = {productions = prods}
     
     let mkState sys = {env = ref []; system = sys}
@@ -59,11 +60,11 @@ module MultiInstEvaluator =
     let getNextInstance {env = envRef } =
         let env = !envRef
         match env with
-            [] -> 0
+            [] -> 1
             | _ -> Seq.max <| Seq.map (fun((instId,_),_)-> instId) env
 
     let assign (s : State) instId var value = s.env := Util.insertSet ((instId, var), value) (!s.env)
 
-    let assignState (state:State,instId) (var) value = assign state instId var value;evalState state
+    let assignState (state:State,instId) var value = assign state instId var value
 
-
+    let resetInstance state instId = state.env := List.filter (fun((inst,_),_) -> inst <> instId) (!state.env)

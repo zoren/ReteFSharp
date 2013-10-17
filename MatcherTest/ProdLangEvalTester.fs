@@ -9,12 +9,18 @@ module ProdLangEvalTester =
     let mySys = mkSystem testProds
     let myEnv = mkState mySys
     let myInstance = getNextInstance myEnv
-    let myInstanceState = (myEnv,myInstance)
-        
-    let assign1 () = assignState myInstanceState "X" "1"
-    let assign2 () = assignState myInstanceState "Y" "2"
-    let assign3 () = assignState myInstanceState "Z" "3"
-    let assign4 () = assignState myInstanceState "V" "4"
-    let assign5 () = assignState myInstanceState "U" "5"
+    //let myInstanceState = (myEnv,myInstance)      
+    let assignReference inst var value = assignState (myEnv,inst) var value
+    //let assignEvalInst0 = assignState myInstanceState
+
+
+
+//    let assign1 () = assignEvalInst0 "X" "1"
+//    let assign2 () = assignEvalInst0 "Y" "2"
+//    let assign3 () = assignEvalInst0 "Z" "3"
+//    let assign4 () = assignEvalInst0 "V" "4"
+//    let assign5 () = assignEvalInst0 "U" "5"
+
+    let dumpState() = evalStateList myEnv
 
 //    let assignEval objectId var value = assignState myState (objectId,var) (value.ToString())

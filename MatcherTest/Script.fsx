@@ -29,16 +29,42 @@ open MatcherTest.ProdLangEvalTester
 ////open MatcherTest.ExampleProds
 //open MatcherTest.ProdLangEvalTester
 //
-assign1()
-assign2()
+//assign1()
+//assign2()
 //assign3()
 //assign4()
 //assign5()
 
 open MatcherTest.ReteTester
 
-assignRete3()
-assignRete2()
-assignRete5()
-assignRete4()
-assignRete1()
+//assignRete3()
+//assignRete2()
+//assignRete5()
+//assignRete4()
+//assignRete1()
+
+let getStateBoth () = 
+    let normalizeState state = 
+        List.map (fun (prodName,states) -> (prodName, List.sort states)) state
+    let referenceState = normalizeState <| dumpState()
+    let reteState = normalizeState <| dumpStateRete()
+    if referenceState = reteState then
+        None
+    else
+        Some (referenceState, reteState)
+
+let assignBoth (inst:int) (var:string) (value:string) = 
+    ignore<|assignReference inst var value; assignReteInt inst var value;getStateBoth ()
+
+
+
+assignBoth 1 "X" "1"
+assignBoth 2 "Y" "2"
+assignBoth 1 "Z" "3"
+assignBoth 1 "V" "4"
+assignBoth 1 "U" "5"
+
+assignBoth 2 "Z" "3"
+assignBoth 2 "V" "4"
+assignBoth 2 "U" "5"
+//assignBoth 2 "X" "1"

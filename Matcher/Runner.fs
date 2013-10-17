@@ -84,7 +84,13 @@ module Runner =
             Some alphaMem -> alphaMemoryActivation(alphaMem, { fields = (inst,variable,value) })
             | None -> ()
 
-    let rec getProductionNodes ({nodeType = nodeType;children = children} as node) =
+    let rec getProductionNodes ({nodeType = nodeType;children = children} as node) : (string * (int * string * string) list list) list =
+        let deWME ({fields = (instString,var,value)}) = 
+            let inst = System.Int32.Parse(instString.Substring(1))
+            (inst,var,value)
+        let deToken token = List.map deWME token
+        let deMatch (token, wme) = (List.rev (deToken token)) @ [deWME wme]
         match nodeType with
-            Production (prodName,matches) -> (prodName,matches) :: List.collect getProductionNodes children
+            Production (prodName,matches) ->
+                (prodName, List.map deMatch (!matches)) :: List.collect getProductionNodes children
             | _ -> List.collect getProductionNodes children
