@@ -5,7 +5,7 @@ open System.Collections.Generic
 
 module Dumper =
     type graphNode = GMem | GJoin | GProd of string | GAlpha | GAlphaRoot
-
+    open CoreLib
     
     let buildGraphwiz (dumpGraph, alphaConds) =
  

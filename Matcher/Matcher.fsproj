@@ -52,6 +52,7 @@
     <Compile Include="ProdLang.fs" />
     <Compile Include="MultiInstEvaluator.fs" />
     <Compile Include="Parser.fs" />
+    <Compile Include="Printer.fs" />
     <Compile Include="ReteData.fs" />
     <Compile Include="ReteBuilder.fs" />
     <Compile Include="Runner.fs" />
@@ -75,8 +76,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <ProjectReference Include="..\Util\Util.fsproj">
-      <Name>Util</Name>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Util\CoreLib.fsproj">
+      <Name>CoreLib</Name>
       <Project>{8550a6eb-6b7a-427d-9f60-7329195e9747}</Project>
       <Private>True</Private>
     </ProjectReference>

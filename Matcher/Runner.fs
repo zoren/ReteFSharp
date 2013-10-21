@@ -3,6 +3,7 @@
 open ReteData
 
 module Runner =
+    open CoreLib
     let pickSymbol (wme:WME) fieldOfArg = 
         let (id,att,value) = wme.fields
         match fieldOfArg with

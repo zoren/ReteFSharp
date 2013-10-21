@@ -1,4 +1,4 @@
-﻿namespace Matcher
+﻿namespace CoreLib
 
 module Trie =
     type trie<'a,'b> = Trie of 'b list * (('a * trie<'a,'b>)list)

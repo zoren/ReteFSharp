@@ -24,4 +24,3 @@ module Parser =
     let prod = sepBy1 comp (pstring "and" .>> wsc) .>> pstring ">>" .>> wsc .>>. id
 
     let prods : Parser<System,Unit> = wsc >>. many prod |>> fun prods -> {productions = prods}
-

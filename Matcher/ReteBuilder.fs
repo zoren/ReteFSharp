@@ -21,7 +21,8 @@ module ReteBuilder =
     let mkAlphaMem children = {items = ref [];successors = children}   
 
     open ProdLang
-    open Trie
+    open CoreLib
+    open CoreLib.Trie
 
     let build trie =
         let amems = ref []

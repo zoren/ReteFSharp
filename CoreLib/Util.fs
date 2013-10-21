@@ -1,4 +1,4 @@
-﻿namespace Matcher
+﻿namespace CoreLib
 
 module Util =
     let rec update l k v =
@@ -61,3 +61,6 @@ module Util =
             failwith "cannot generate: negative count given"
         else
             g n
+
+
+    let seqJoin e s = Seq.reduce (fun x y -> Seq.append x (Seq.append (Seq.singleton e) y)) s

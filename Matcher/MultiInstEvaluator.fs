@@ -2,7 +2,7 @@
 
 module MultiInstEvaluator =
     open Matcher.ProdLang
-
+    open CoreLib
     type InstanceId = int
     type Environment = ((InstanceId * Variable) * Value) list
 
