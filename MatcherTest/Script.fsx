@@ -53,6 +53,18 @@ let getStateBoth () =
     else
         Some (referenceState, reteState)
 
+open Matcher.Runner
+open Matcher.MultiInstEvaluator
+
+let getAssignBothFromProds testProds =
+    let (reteDummy, alphas) = Matcher.ReteBuilder.buildReteFromProductions testProds
+    let mySys = mkSystem testProds
+    let myEnv = mkState mySys
+    (fun inst var value -> assign myEnv inst var value,
+     fun inst var value -> activateCond alphas ("$" + inst.ToString()) var value)
+
+
+
 let assignBoth (inst:int) (var:string) (value:string) = 
     ignore<|assignReference inst var value; assignReteInt inst var value;getStateBoth ()
 
