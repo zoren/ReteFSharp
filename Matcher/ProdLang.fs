@@ -7,7 +7,7 @@ module ProdLang =
 
     type ObjectVar = Object * Variable
 
-    type Condition = Eq of ObjectVar * Value
+    type Condition = Eq of ObjectVar * Value | TRUE
     type Production = Condition list * string
 
     type System = {productions : Production list}
