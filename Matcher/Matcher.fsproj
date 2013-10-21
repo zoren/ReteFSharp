@@ -51,12 +51,23 @@
   <ItemGroup>
     <Compile Include="ProdLang.fs" />
     <Compile Include="MultiInstEvaluator.fs" />
+    <Compile Include="Parser.fs" />
     <Compile Include="ReteData.fs" />
     <Compile Include="ReteBuilder.fs" />
     <Compile Include="Runner.fs" />
     <Compile Include="Dumper.fs" />
+    <None Include="packages.config" />
+    <None Include="ParserScript.fsx" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FParsec">
+      <HintPath>..\packages\FParsec.1.0.1\lib\net40-client\FParsec.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FParsecCS">
+      <HintPath>..\packages\FParsec.1.0.1\lib\net40-client\FParsecCS.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
