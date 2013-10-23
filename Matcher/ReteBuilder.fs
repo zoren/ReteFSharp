@@ -28,19 +28,21 @@ module ReteBuilder =
         let emitAmem cond join = amems := Util.updateMany !amems cond join
 
         let rec trie2toRete (trie:trie<Condition,string>) l =
-            let getVars (Eq((var,_),_)) = [var]
-            
+            let getVars = function (Eq((var,_),_)) -> [var] | TRUE -> []
             let trieEdgeToJoinNode (c,trie) =
                 let tests = 
-                    match l with
-                        [] -> []
-                        | _ -> [mkTest (Identifier,0,Identifier)]
+                    match c with
+                        Eq((var,_),_) ->
+                            match List.tryFindIndex (List.exists ((=) var)) l with
+                                Some index -> [mkTest (Identifier,index,Identifier)]
+                                | None -> []
+                        | _ -> []
                 let join = mkJoin tests (trie2toRete trie ((getVars c)::l))
                 (emitAmem c join;join)
             match trie with
                   Trie(prods,[]) -> List.map mkProd prods
                 | Trie(prods,tries) -> (List.map mkProd prods) @ [mkBetaMem (List.map trieEdgeToJoinNode tries)]            
- 
+
         let rete = match trie2toRete trie [] with
                     [{nodeType = Beta mem;children = children}] -> mkBetaMemDummy children
                     | children -> mkBetaMemDummy children
