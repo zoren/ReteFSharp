@@ -7,7 +7,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Matcher", "Matcher\Matcher.
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MatcherTest", "MatcherTest\MatcherTest.fsproj", "{46F13FAC-8331-4288-ACC6-976FB9A88CC0}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CoreLib", "Util\CoreLib.fsproj", "{8550A6EB-6B7A-427D-9F60-7329195E9747}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CoreLib", "CoreLib\CoreLib.fsproj", "{8550A6EB-6B7A-427D-9F60-7329195E9747}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -78,7 +78,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Util\CoreLib.fsproj">
+    <ProjectReference Include="..\CoreLib\CoreLib.fsproj">
       <Name>CoreLib</Name>
       <Project>{8550a6eb-6b7a-427d-9f60-7329195e9747}</Project>
       <Private>True</Private>
