@@ -11,7 +11,6 @@ module ReteBuilder =
     let mkProd s = mkRete (Production (s, ref [])) []
     
     let mkTest (farg1,cond,farg2) = { fieldOfArg1 = farg1;conditionNumberOfArg2 = cond; fieldOfArg2 = farg2 }
-    let mkTests _ = [] : testAtJoinNode list
     let mkNullAlpha () = ref None
     let mkJoin tests children = mkRete (Join {tests = tests;amem = mkNullAlpha ()}) children
     
