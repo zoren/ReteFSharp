@@ -56,3 +56,45 @@ module Check =
                 override x.Shrinker t = Seq.empty }            
 
     let register = Arb.register<ProdLangGenerators>()
+
+    let getObjVarsFromCond cond = 
+        match cond with
+            Eq((obj,var),value) -> Seq.singleton (var,value)
+            | TRUE -> Seq.empty
+
+    open CoreLib
+
+    let getObjVarsFromConds trie conds = 
+        let comparisons = Seq.collect getObjVarsFromCond conds
+        Seq.fold (fun s (var,value) -> Trie.insert s (Seq.toList var, value) ) trie comparisons
+        
+    let getVarsFromProds (prods: Production list) = Seq.fold (fun s (conds,_) -> getObjVarsFromConds s conds) Trie.empty prods
+
+    let getVarValueAssocList prods = 
+        List.map (fun(kl:char list,vl)->(new string(List.toArray kl),vl))(Trie.toAssocList <| getVarsFromProds prods)
+
+    let pickRandomFromList list =
+        let length = List.length list
+        let rnd = System.Random()
+        let index = rnd.Next(length)
+        List.nth list index
+
+    let flattenAssocList assocList = List.collect (fun(k,vs)-> List.map (fun v -> (k,v)) vs) assocList 
+
+    let spec prods = 
+        let domain = flattenAssocList <| getVarValueAssocList prods
+        //build rete
+        // build
+        let assign _ = true
+        let assignAll dom =
+            match dom with
+                [] -> true
+                | _ ->
+                    let (var,value) = pickRandomFromList dom
+                    // todo what about multi instance
+                    assign (var,value)
+        assignAll domain
+                            
+
+
+

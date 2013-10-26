@@ -55,6 +55,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CoreLib\CoreLib.fsproj">
+      <Name>CoreLib</Name>
+      <Project>{8550a6eb-6b7a-427d-9f60-7329195e9747}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Matcher\Matcher.fsproj">
       <Name>Matcher</Name>
       <Project>{f676b119-518a-4578-928d-92b12fc1bb67}</Project>
