@@ -32,32 +32,42 @@ module Check =
         Gen.frequency <| 
             Seq.map (fun(freq,v)->(freq, Gen.constant v))[(50,"A");(25,"B");(12,"C");(5,"D");(5,"E");(2,"F")]
 
-    let objVar = Gen.map2 (fun obj value -> (obj, value)) objectVariable variable
+    let objVar : Gen<ObjectVar> = Gen.map2 (fun obj value -> (obj, value)) objectVariable variable
 
-    let value = 
-        Gen.frequency <| 
-            Seq.map (fun(freq,v)->(freq, Gen.constant v))[(50,"1");(25,"2");(12,"3");(5,"4");(5,"5");(2,"6")]
-    let eqCondition = Gen.map2 (fun obj value -> Eq(obj, value)) objVar value
-    let condition = Gen.frequency [(98,eqCondition);(2,Gen.constant TRUE)]
-    let conditions = Gen.listOf condition
-    let listOfConditions = Gen.listOf conditions
-    let production = Gen.map2 (fun conds prodName -> (conds, prodName)) conditions Arb.generate<string>
-    let productions = Gen.listOf production
+    let valueGen : Gen<Value> = Gen.elements <| Seq.map (fun i -> i.ToString())[1;2;3;4;5;6;7]
+//        Gen.frequency <| 
+//            Seq.map (fun(freq,v)->(freq, Gen.constant v))[(50,"1");(25,"2");(12,"3");(5,"4");(5,"5");(2,"6")]
+    let eqCondition = Gen.map2 (fun obj value -> Eq(obj, value)) objVar valueGen
+    let condition = Gen.frequency [(98,eqCondition)] //todo  ;(2,Gen.constant TRUE)]
+    //let conditions = Gen.listOf condition
+    let conditions = Gen.sized (fun size -> Gen.nonEmptyListOf condition)
 
-    let prods2 =
-        let f condsList = List.mapi (fun i conds -> (conds,"P" + i.ToString()) :Production) condsList
+    let listOfConditions = Gen.sized (fun size -> Gen.resize ((size|>float|>sqrt|>int)) (Gen.listOf conditions))
+
+    //let listOfConditions = Gen.sized (fun size -> Gen.resize (size|>float|>sqrt|>int) (Gen.listOf conditions))
+//    let listOfAverageLength avgLength elemGen = 
+//        let lengthGen = Gen.choose (0,avgLength * 2)
+//        Gen.map (fun gn n -> Gen.listOfLength n gn) lengthGen
+    //Gen.sized (fun size -> Gen.resize (size|>float|>sqrt|>int) (Gen.listOf conditions))
+//    let production = Gen.map2 (fun conds prodName -> (conds, prodName)) conditions Arb.generate<string>
+//    let productions = Gen.listOf production
+    
+    let system =
+        let f condsList = {productions =List.mapi (fun i conds -> (conds,"P" + i.ToString()) :Production) condsList}
         f <!> listOfConditions
     //let 
 //
     type ProdLangGenerators =
         static member Tree() =
-            {new Arbitrary<Production list>() with
-                override x.Generator = prods2
-                override x.Shrinker t = Seq.empty }            
+            {new Arbitrary<System>() with
+                override x.Generator = system
+                override x.Shrinker t = Seq.empty }
 
-    let register = Arb.register<ProdLangGenerators>()
+    let _ = Arb.register<ProdLangGenerators>()
 
-    let getObjVarsFromCond cond = 
+
+
+    let getComparisonFromCond cond = 
         match cond with
             Eq((obj,var),value) -> Seq.singleton (var,value)
             | TRUE -> Seq.empty
@@ -65,7 +75,7 @@ module Check =
     open CoreLib
 
     let getObjVarsFromConds trie conds = 
-        let comparisons = Seq.collect getObjVarsFromCond conds
+        let comparisons = Seq.collect getComparisonFromCond conds
         Seq.fold (fun s (var,value) -> Trie.insert s (Seq.toList var, value) ) trie comparisons
         
     let getVarsFromProds (prods: Production list) = Seq.fold (fun s (conds,_) -> getObjVarsFromConds s conds) Trie.empty prods
@@ -79,22 +89,179 @@ module Check =
         let index = rnd.Next(length)
         List.nth list index
 
+    let pickRandomFromSeq seq =
+        let length = Seq.length seq
+        if length = 0 
+        then 
+            None
+        else
+            let rnd = System.Random()
+            let index = rnd.Next(length)
+            Some(Seq.nth index seq)
+
+    let pickRandomFromRange lower upper =
+        let rnd = System.Random()
+        rnd.Next(lower,upper)        
+
     let flattenAssocList assocList = List.collect (fun(k,vs)-> List.map (fun v -> (k,v)) vs) assocList 
 
-    let spec prods = 
+    let getObjVarsFromCond cond = 
+        match cond with
+            Eq((obj,var),value) -> Seq.singleton obj
+            | TRUE -> Seq.empty
+
+    let getObjVarsFromProductions (prods:seq<Production>) = Seq.distinct <| Seq.collect (fun (conds,_) -> Seq.collect getObjVarsFromCond conds) prods
+
+    open Matcher.Runner
+    open Matcher.MultiInstEvaluator
+    
+    let referenceAndReteAgree { productions = prods } = 
+        let numberOfProds = List.length prods
         let domain = flattenAssocList <| getVarValueAssocList prods
-        //build rete
-        // build
-        let assign _ = true
-        let assignAll dom =
-            match dom with
-                [] -> true
-                | _ ->
-                    let (var,value) = pickRandomFromList dom
-                    // todo what about multi instance
-                    assign (var,value)
-        assignAll domain
-                            
+        
+        // setup rete
+        let (reteDummy, alphas) = Matcher.ReteBuilder.buildReteFromProductions prods
+        let assignReteInt (inst:int) = activateCond alphas ("$" + inst.ToString())
+        
+        // setup classic
+        let mySys = mkSystem prods
+        let myEnv = mkState mySys
+        let myInstance = getNextInstance myEnv
 
+        let assignReference inst var value = assignState (myEnv,inst) var value
+        
+        let normalizeState state = List.sort <| List.map (fun (prodName,states) -> (prodName, List.sort states)) state
 
+        let assignBoth inst (var:Variable) (value:Value) = (assignReteInt inst var value;assignReference inst var value)
+
+        let objvars = getObjVarsFromProductions prods
+
+        let getProduction (prods:Production seq) prodName = Seq.tryFind (fun (_,n) -> n = prodName) prods
+
+        //let myEnv = !myEnv.env
+        let condSatisfied c = 
+            match c with 
+                Eq((_,var),value) when List.exists (fun ((_,var'),value')-> var = var' && value = value') (!myEnv.env) -> true
+                | TRUE -> true
+                | _ -> false
+
+        let getRandomAssignment (cl: Condition list) =            
+            let getUnsatisfied cl = List.filter (fun c -> not (condSatisfied c)) cl
+            let myC = getUnsatisfied cl
+            let c = pickRandomFromSeq myC
+            let getVarValueFromCond cond =
+                match cond with
+                    Eq((_,var),value) -> Some (var,value)
+                    | _ -> None
+            Option.bind getVarValueFromCond c
+
+        let numberOfObjectVars = Seq.length objvars
+
+        let tryLookup env key = List.tryFind (fun (k',_) -> key = k') env
+
+        let rec getAssign localEnv cl =
+            match cl with 
+                  [] -> None
+                | (Eq((obj,var),value)) :: cl' -> 
+                    match tryLookup localEnv obj with
+                        Some (_,prevInst) ->
+                            match List.tryFind (fun ((einst,evar),evalue) -> einst = prevInst && var = evar && evalue = value) (!myEnv.env) with
+                                Some ((einst,evar),evalue) -> getAssign ((obj,prevInst)::localEnv) cl'
+                                | None -> Some (prevInst,var,value)
+                        | None -> 
+                            let inst = System.Random().Next(0, numberOfObjectVars)
+                            Some(inst,var,value)                
+//                    match List.tryFind (fun ((einst,evar),evalue) -> var = evar && evalue = value) (!myEnv.env) with
+//                        Some ((einst,evar),evalue) -> getAssign ((obj,einst)::localEnv) cl'
+//                        | None ->
+//                            match List.tryFind (fun (obj',_) -> obj = obj') localEnv with
+//                                Some (_,prevInst) -> Some(prevInst,var,value)
+//                                | None -> 
+//                                    let inst = System.Random().Next(1, numberOfObjectVars)
+//                                    Some(inst,var,value)                
+
+        let assignRandom (deactiveProdStates:ProductionsState) =             
+            
+            let assignNew = System.Random().Next(0,2) = 0
+//            if true 
+//                then 
+//                    let prodState = pickRandomFromSeq deactiveProdStates
+//                    let (cl,_) = Option.get <| Option.bind (fun (prodName,_) -> getProduction prods prodName) prodState
+//                    match getRandomAssignment cl with
+//                        Some (var,value) -> assignBoth inst var value
+//                        | None -> 
+//                            //System.Console.WriteLine("could not find deactive")
+//                            let (var,value) = pickRandomFromList domain
+//                            assignBoth inst var value
+//                else 
+//                    let (var,value) = pickRandomFromList domain
+            let prodState = pickRandomFromSeq deactiveProdStates
+            let (cl,_) = Option.get <| Option.bind (fun (prodName,_) -> getProduction prods prodName) prodState
+            match getAssign [] cl with
+                Some (inst,var,value) -> 
+                    assignBoth inst var value
+                | None -> 
+                    let inst = System.Random().Next(0, numberOfObjectVars)
+                    let (var,value) = pickRandomFromList domain
+                    assignBoth inst var value
+//            System.Console.WriteLine("{0}.{1} <- {2}",inst,var,value)
+
+        let rec activateAllProds iteration =
+            let referenceState = normalizeState <| evalStateList myEnv
+            let reteState = normalizeState <| getProductionNodes reteDummy            
+
+            let (activeRefProds, deactiveProds) = List.partition (fun (prodName,l) -> not <| List.isEmpty l ) referenceState
+            let activeReteProds = List.filter (fun (prodName,l) -> not <| List.isEmpty l ) reteState
+            
+            if activeRefProds = activeReteProds then
+                if List.length activeRefProds = numberOfProds then
+                    ()
+                else
+                //System.Console.Write(iteration.ToString()+ " ");
+                    (assignRandom deactiveProds;activateAllProds(iteration+1))
+            else
+                failwith <| "NOT EQUAL ref" + referenceState.ToString() + " rete " + reteState.ToString()
+        let activate (var,value) =
+            let referenceState = normalizeState <| evalStateList myEnv
+            let reteState = normalizeState <| getProductionNodes reteDummy            
+
+            let (activeRefProds, deactiveProds) = List.partition (fun (prodName,l) -> not <| List.isEmpty l ) referenceState
+            let activeReteProds = List.filter (fun (prodName,l) -> not <| List.isEmpty l ) reteState
+            
+            if activeRefProds = activeReteProds then
+                if List.length activeRefProds = numberOfProds then
+                    ()
+                else
+                    let inst = Util.rand numberOfObjectVars
+                    assignBoth inst var value
+            else 
+                failwith <| "NOT EQUAL ref" + referenceState.ToString() + " rete " + reteState.ToString()
+        let checkCompleteness () =
+            let referenceState = normalizeState <| evalStateList myEnv
+            let reteState = normalizeState <| getProductionNodes reteDummy            
+
+            let (activeRefProds, deactiveProds) = List.partition (fun (prodName,l) -> not <| List.isEmpty l ) referenceState
+            let activeReteProds = List.filter (fun (prodName,l) -> not <| List.isEmpty l ) reteState
+            activeRefProds = activeReteProds && List.length activeRefProds = numberOfProds      
+        
+        let rec activateAll n = 
+            if checkCompleteness() then
+                n
+            else
+                Seq.iter activate (Util.randPermutateArray <| List.toArray domain);activateAll (n+1)
+                
+        System.Console.WriteLine("prods " + (List.length prods).ToString()+ " objVars " +  (Seq.length objvars).ToString())
+        let sw = System.Diagnostics.Stopwatch.StartNew()
+        //activateAllProds 0
+        //Seq.iter activate (Util.randPermutateArray <| List.toArray domain)
+        let activationIterations = activateAll 0
+        if checkCompleteness() then
+            ()
+        else
+            failwith "Not complete"
+        System.Console.WriteLine("Elapsed: " + sw.ElapsedMilliseconds.ToString())
+        System.Console.WriteLine("Activations: " + activationIterations.ToString())
+        System.Console.WriteLine("env size: " + (List.length (!myEnv.env)).ToString())
+        System.Console.WriteLine()
+  
 
