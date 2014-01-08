@@ -40,3 +40,19 @@ module ReteData =
 
 //    let nullRete : reteNode option = None
 //    let nullAlpha : alphaMemory option = None
+    let rec map f { nodeType = nodeType; children = children } =
+        f nodeType (List.map (map f) children)
+
+    let rec iter f { nodeType = nodeType; children = children } =
+        f nodeType ;List.iter (iter f) children
+
+    type testTree = TestTreeNode of (fieldOfArg * int * fieldOfArg) list * testTree list
+
+    let deRecTest { fieldOfArg1 = farg1;conditionNumberOfArg2 = cond; fieldOfArg2 = farg2 } = (farg1,cond,farg2)
+
+    let print nodeType children = 
+        match nodeType with
+            Join {tests = tests} -> TestTreeNode (List.map deRecTest tests, children )
+            | _ -> TestTreeNode ([], children )
+    let printTests node = map print node
+    
