@@ -72,7 +72,7 @@ module Runner =
             | {nodeType = Join _} -> joinNodeLeftActivation (node, t)
             | {nodeType = Production (s,matches)} ->
                 let pp {fields = (o,vr,vl)} = "(" + o + "|" + vr + "|" + vl + ")"
-                let dump = wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
+//                let dump = wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
                 matches := (t,w) :: !matches
     
     and alphaMemoryActivation (node:alphaMemory, w:WME) = 
@@ -81,8 +81,14 @@ module Runner =
             rigthActivation (child, w)
     
     let activateCond alphas inst variable value =
+        let tup = (inst,variable,value)
+        let wme = { fields = tup }
         match Util.lookupOpt alphas (variable,value) with
-            Some alphaMem -> alphaMemoryActivation(alphaMem, { fields = (inst,variable,value) })
+            Some alphaMem -> 
+                if List.exists ((=)wme) !alphaMem.items then 
+                    ()
+                else            
+                    alphaMemoryActivation(alphaMem, wme)
             | None -> ()
 
     let rec getProductionNodes ({nodeType = nodeType;children = children} as node) : (string * (int * string * string) list list) list =
