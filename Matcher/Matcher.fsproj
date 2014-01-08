@@ -54,6 +54,7 @@
     <Compile Include="Parser.fs" />
     <Compile Include="Printer.fs" />
     <Compile Include="ReteData.fs" />
+    <Compile Include="SimpleBuilder.fs" />
     <Compile Include="ReteBuilder.fs" />
     <Compile Include="Runner.fs" />
     <Compile Include="Dumper.fs" />

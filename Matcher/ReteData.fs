@@ -7,12 +7,13 @@ module ReteData =
     type token = WME list
 
     type fieldOfArg = Identifier | Attribute | Value
-
+ //s   type ComparisonOperator = Equals
     type testAtJoinNode = 
         {
             fieldOfArg1 : fieldOfArg
             conditionNumberOfArg2 : int
             fieldOfArg2 : fieldOfArg
+    //        compOp : ComparisonOperator
         }
 
     type BetaMemory = { items : token list ref }
@@ -56,3 +57,30 @@ module ReteData =
             | _ -> TestTreeNode ([], children )
     let printTests node = map print node
     
+
+
+    let mkNullParent () = ref None
+
+    let mkRete nodeType children = {nodeType = nodeType;children = children;parent = mkNullParent ()}
+     
+    let mkProd s = mkRete (Production (s, ref [])) []
+    
+    let mkTest (farg1,cond,farg2) = { fieldOfArg1 = farg1;conditionNumberOfArg2 = cond; fieldOfArg2 = farg2 }
+ //   ; compOp = Equals }
+    let mkNullAlpha () = ref None
+    let mkJoin tests children = mkRete (Join {tests = tests;amem = mkNullAlpha ()}) children
+    
+    let mkBetaMem children = mkRete (Beta {items = ref []}) children
+    let mkBetaMemDummy children = mkRete (Beta {items = ref [[]]}) children
+
+    let mkAlphaMem children = {items = ref [];successors = children}   
+
+    let rec setParents (node:reteNode) =
+        for child in node.children do
+            (child.parent := Some node;setParents child)
+
+    let setAlphaMen (node:alphaMemory) =
+        for succ in node.successors do
+            match succ.nodeType with
+                Join jd -> jd.amem := Some node
+                | _ -> ()

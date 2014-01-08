@@ -4,21 +4,6 @@
 module ReteBuilder =
     open ReteData
     
-    let mkNullParent () = ref None
-
-    let mkRete nodeType children = {nodeType = nodeType;children = children;parent = mkNullParent ()}
-     
-    let mkProd s = mkRete (Production (s, ref [])) []
-    
-    let mkTest (farg1,cond,farg2) = { fieldOfArg1 = farg1;conditionNumberOfArg2 = cond; fieldOfArg2 = farg2 }
-    let mkNullAlpha () = ref None
-    let mkJoin tests children = mkRete (Join {tests = tests;amem = mkNullAlpha ()}) children
-    
-    let mkBetaMem children = mkRete (Beta {items = ref []}) children
-    let mkBetaMemDummy children = mkRete (Beta {items = ref [[]]}) children
-
-    let mkAlphaMem children = {items = ref [];successors = children}   
-
     open ProdLang
     open CoreLib
     
@@ -68,15 +53,6 @@ module ReteBuilder =
     let buildSetParents trie = 
         let (rete,alphas) = build trie
         
-        let rec setParents (node:reteNode) =
-            for child in node.children do
-                (child.parent := Some node;setParents child)
-
-        let setAlphaMen (node:alphaMemory) =
-            for succ in node.successors do
-                match succ.nodeType with
-                    Join jd -> jd.amem := Some node
-                    | _ -> ()
         let getVarValMemTuple = function | (Eq((_,var),value),mem) -> Some ((var,value),mem) | (TRUE,_) -> None
         let _ = setParents rete
         let _ = List.iter (fun (_,a)->setAlphaMen a) alphas
