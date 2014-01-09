@@ -64,3 +64,17 @@ module Util =
 
 
     let seqJoin e s = Seq.reduce (fun x y -> Seq.append x (Seq.append (Seq.singleton e) y)) s
+
+    let rand =
+        let rndGen = new System.Random(int System.DateTime.Now.Ticks)
+        (fun max -> rndGen.Next(max))
+
+    let randPermutateArray a =
+        let n = Array.length a
+        for x in 1 .. n do
+            let i = n - x
+            let j = rand i
+            let tmp = a.[i]
+            a.[i] <- a.[j]
+            a.[j] <- tmp
+        a

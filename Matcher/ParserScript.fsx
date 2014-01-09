@@ -1,4 +1,4 @@
-﻿#r @"bin\Debug\Util.dll"
+﻿#r @"bin\Debug\CoreLib.dll"
 #r @"bin\Debug\FParsecCS.dll"
 #r @"bin\Debug\FParsec.dll"
 
