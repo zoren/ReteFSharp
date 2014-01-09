@@ -46,10 +46,12 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SimpleExample.fs" />
     <Compile Include="ExampleProds.fs" />
     <Compile Include="ProdLangEvalTester.fs" />
     <Compile Include="ReteTester.fs" />
     <Compile Include="Check.fs" />
+    <None Include="Simple.fsx" />
     <None Include="Script.fsx" />
     <None Include="Check.fsx" />
     <None Include="packages.config" />
