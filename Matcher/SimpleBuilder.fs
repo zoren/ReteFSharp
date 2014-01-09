@@ -5,10 +5,6 @@ module SimpleBuilder =
     
     type Condition = MetaExp * MetaExp * MetaExp
    // type Rule = 
-    let example : Condition list = [(Var "x", Val "on", Var "y");
-                                    (Var "y", Val "left-of", Var "z");
-                                    (Var "z", Val "color", Val "red");
-                                    ]
     open ReteData
     open CoreLib
 
@@ -74,3 +70,13 @@ module SimpleBuilder =
         let _ = setParents rete
         let _ = List.iter (fun (_,a)->List.iter setAlphaMen a) alphas
         (rete,alphas)
+
+    let metaExpMatch metaExp v =
+        match metaExp with
+            Val value -> value = v
+            | Var _ -> true
+
+    let wmeMatch { fields = (wid,wattr,wvalue) } ((id,attr,value):Condition) =
+        metaExpMatch id wid && metaExpMatch attr wattr && metaExpMatch value wvalue
+
+    let lookupAlphaMem l w = List.tryFind ( fun(c,v) -> wmeMatch w c ) l
