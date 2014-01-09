@@ -1,6 +1,6 @@
 ﻿namespace Matcher
 
-open ReteData
+open Matcher.ReteData
 
 module Runner =
     open CoreLib
@@ -72,7 +72,7 @@ module Runner =
             | {nodeType = Join _} -> joinNodeLeftActivation (node, t)
             | {nodeType = Production (s,matches)} ->
                 let pp {fields = (o,vr,vl)} = "(" + o + "|" + vr + "|" + vl + ")"
-//                let dump = wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
+                let dump = wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
                 matches := (t,w) :: !matches
     
     and alphaMemoryActivation (node:alphaMemory, w:WME) = 
@@ -80,6 +80,7 @@ module Runner =
         for child in node.successors do
             rigthActivation (child, w)
     
+    // prodlang specific
     let activateCond alphas inst variable value =
         let tup = (inst,variable,value)
         let wme = { fields = tup }
@@ -102,4 +103,17 @@ module Runner =
                 (prodName, List.map deMatch (!matches)) :: List.collect getProductionNodes children
             | _ -> List.collect getProductionNodes children
 
-    
+    // simple lang
+
+    let actMem wme alphaMem =
+        if List.exists ((=)wme) !alphaMem.items then 
+            failwith "wme already present in alpha mem"
+        else            
+            alphaMemoryActivation(alphaMem, wme)
+
+    open Matcher.SimpleBuilder    
+
+    let act alphas wme =         
+        match lookupAlphaMem alphas wme with
+            Some (_,alphaMems) -> List.iter (actMem wme) alphaMems
+            | None -> failwith "could not find matching condition"
