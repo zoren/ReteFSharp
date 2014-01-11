@@ -9,7 +9,11 @@ module SimpleExample =
     let example = [(Var "x", Val "on", Var "y");
                     (Var "y", Val "left-of", Var "z");
                     (Var "z", Val "color", Val "red")]
-                        
+
+    let simpleExampleProds = [([(Var "x", Val "on", Var "y")],"P1");
+                              ([(Var "x", Val "on", Var "y");(Var "y", Val "left-of", Var "z")],"P2");
+                              (example, "P3")]
+
     let B1 = "B1"
     let B2 = "B2"
     let B3 = "B3"
@@ -35,4 +39,15 @@ module SimpleExample =
     let w8 = mkWme (B3,on,table)
     let w9 = mkWme (B3,color,red)
 
-    
+
+    let C1 = (Var "x", Val "on", Var "y")
+    let C2 = (Var "y", Val "left-of", Var "z")
+    let C3 = (Var "z", Val "color", Val "red")
+    let C4 = (Var "zz", Val "color", Val "red")
+    let C5 = (Var "zzz", Val "color", Val "red")
+
+    let prod1 = ([C1;C2;C3],"P1")
+    let prod2 = ([C1;C2;C4;C5],"P2")
+    let prod3 = ([C1;C2;C4;C3],"P3")
+
+    let simpleTestProds = [prod1;prod2;prod3]

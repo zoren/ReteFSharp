@@ -117,3 +117,8 @@ module Runner =
         match lookupAlphaMem alphas wme with
             Some (_,alphaMems) -> List.iter (actMem wme) alphaMems
             | None -> failwith "could not find matching condition"
+
+    let act2 alphas wme =
+        match lookupAlphaMem alphas wme with
+            Some (_,alphaMems) -> actMem wme alphaMems
+            | None -> failwith "could not find matching condition"
