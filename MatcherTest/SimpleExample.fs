@@ -2,7 +2,7 @@
 
 module SimpleExample =
     open Matcher.ReteData
-    open Matcher.SimpleBuilder
+    open ProdLang0.SimpleBuilder
 
     let mkWme f = { fields = f }
 
@@ -12,7 +12,8 @@ module SimpleExample =
 
     let simpleExampleProds = [([(Var "x", Val "on", Var "y")],"P1");
                               ([(Var "x", Val "on", Var "y");(Var "y", Val "left-of", Var "z")],"P2");
-                              (example, "P3")]
+                              (example, "P3");
+                              (example@[(Var "z", Val "color", Val "blue")], "P4")]
 
     let B1 = "B1"
     let B2 = "B2"
@@ -38,6 +39,8 @@ module SimpleExample =
     let w7 = mkWme (B3,leftOf,B4)
     let w8 = mkWme (B3,on,table)
     let w9 = mkWme (B3,color,red)
+
+    let w10 = mkWme (B3,color,blue)
 
 
     let C1 = (Var "x", Val "on", Var "y")

@@ -1,8 +1,8 @@
 ﻿// Learn more about F# at http://fsharp.net. See the 'F# Tutorial' project
 // for more guidance on F# programming.
 
-
 #r @"bin\\Debug\Matcher.dll"
+#r @"bin\\Debug\ProdLang0.dll"
 
 //open MatcherTest
 //open MatcherTest.ExampleProds
@@ -54,29 +54,29 @@ let getStateBoth () =
         Some (referenceState, reteState)
 
 open Matcher.Runner
-open Matcher.MultiInstEvaluator
+open ProdLang0.MultiInstEvaluator
 
 let getAssignBothFromProds testProds =
-    let (reteDummy, alphas) = Matcher.ReteBuilder.buildReteFromProductions testProds
+    let (reteDummy, alphas) = ProdLang0.ReteBuilder.buildReteFromProductions testProds
     let mySys = mkSystem testProds
     let myEnv = mkState mySys
     (fun inst var value -> assign myEnv inst var value,
      fun inst var value -> activateCond alphas ("$" + inst.ToString()) var value)
 
-
-
 let assignBoth (inst:int) (var:string) (value:string) = 
     ignore<|assignReference inst var value; assignReteInt inst var value;getStateBoth ()
 
+assignBoth 1 "A" "5"
+assignBoth 2 "A" "6"
+assignBoth 3 "A" "4"
 
-
-assignBoth 1 "X" "1"
-assignBoth 2 "Y" "2"
-assignBoth 1 "Z" "3"
-assignBoth 1 "V" "4"
-assignBoth 1 "U" "5"
-
-assignBoth 2 "Z" "3"
-assignBoth 2 "V" "4"
-assignBoth 2 "U" "5"
+//assignBoth 1 "X" "1"
+//assignBoth 2 "Y" "2"
+//assignBoth 1 "Z" "3"
+//assignBoth 1 "V" "4"
+//assignBoth 1 "U" "5"
+//
+//assignBoth 2 "Z" "3"
+//assignBoth 2 "V" "4"
+//assignBoth 2 "U" "5"
 //assignBoth 2 "X" "1"

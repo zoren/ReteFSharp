@@ -4,9 +4,7 @@ open MatcherTest.ExampleProds
 
 
 module ReteTester =
-    open Matcher.ReteBuilder
-
-    let (reteDummy, alphas) = Matcher.ReteBuilder.buildReteFromProductions testProds
+    let (reteDummy, alphas) = ProdLang0.ReteBuilder.buildReteFromProductions testProds
 
     open Matcher.Runner
 

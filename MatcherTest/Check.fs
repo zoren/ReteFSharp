@@ -1,7 +1,7 @@
 ﻿namespace MatcherTest
 
 module Check = 
-    open Matcher.ProdLang
+    open ProdLang0.ProdLang
     open FsCheck
     
     type Tree = Leaf of int | Branch of Tree * Tree
@@ -113,14 +113,14 @@ module Check =
     let getObjVarsFromProductions (prods:seq<Production>) = Seq.distinct <| Seq.collect (fun (conds,_) -> Seq.collect getObjVarsFromCond conds) prods
 
     open Matcher.Runner
-    open Matcher.MultiInstEvaluator
+    open ProdLang0.MultiInstEvaluator
     
     let referenceAndReteAgree { productions = prods } = 
         let numberOfProds = List.length prods
         let domain = flattenAssocList <| getVarValueAssocList prods
         
         // setup rete
-        let (reteDummy, alphas) = Matcher.ReteBuilder.buildReteFromProductions prods
+        let (reteDummy, alphas) = ProdLang0.ReteBuilder.buildReteFromProductions prods
         let assignReteInt (inst:int) = activateCond alphas ("$" + inst.ToString())
         
         // setup classic

@@ -4,7 +4,7 @@ open MatcherTest.ExampleProds
 
 module ProdLangEvalTester = 
 //    open Matcher.ProdLangEval
-    open Matcher.MultiInstEvaluator
+    open ProdLang0.MultiInstEvaluator
 
     let mySys = mkSystem testProds
     let myEnv = mkState mySys
