@@ -7,13 +7,12 @@ module ReteData =
     type token = WME list
 
     type fieldOfArg = Identifier | Attribute | Value
- //s   type ComparisonOperator = Equals
+
     type testAtJoinNode = 
         {
             fieldOfArg1 : fieldOfArg
             conditionNumberOfArg2 : int
             fieldOfArg2 : fieldOfArg
-    //        compOp : ComparisonOperator
         }
 
     type BetaMemory = { items : token list ref }
@@ -66,7 +65,7 @@ module ReteData =
     let mkProd s = mkRete (Production (s, ref [])) []
     
     let mkTest (farg1,cond,farg2) = { fieldOfArg1 = farg1;conditionNumberOfArg2 = cond; fieldOfArg2 = farg2 }
- //   ; compOp = Equals }
+
     let mkNullAlpha () = ref None
     let mkJoin tests children = mkRete (Join {tests = tests;amem = mkNullAlpha ()}) children
     

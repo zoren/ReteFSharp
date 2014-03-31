@@ -110,15 +110,3 @@ module Runner =
             failwith "wme already present in alpha mem"
         else            
             alphaMemoryActivation(alphaMem, wme)
-
-    open Matcher.SimpleBuilder    
-
-    let act alphas wme =         
-        match lookupAlphaMem alphas wme with
-            Some (_,alphaMems) -> List.iter (actMem wme) alphaMems
-            | None -> failwith "could not find matching condition"
-
-    let act2 alphas wme =
-        match lookupAlphaMem alphas wme with
-            Some (_,alphaMems) -> actMem wme alphaMems
-            | None -> failwith "could not find matching condition"
