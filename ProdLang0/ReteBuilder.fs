@@ -1,8 +1,7 @@
-﻿namespace Matcher
-
+﻿namespace ProdLang0
 
 module ReteBuilder =
-    open ReteData
+    open Matcher.ReteData
     
     open ProdLang
     open CoreLib
@@ -59,5 +58,5 @@ module ReteBuilder =
         (rete,List.map (fun ((var,value),mem) -> ((var,value),mem)) alphas)
 
     let buildReteFromProductions productions = 
-        let filteredProds = Seq.map (fun(conds,prodName) -> (conditionsToNumbers conds, prodName)) productions
+        let filteredProds = Seq.map (fun((conds,prodName):Production) -> (conditionsToNumbers conds, prodName)) productions
         buildSetParents <| buildTrie filteredProds

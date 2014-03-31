@@ -1,7 +1,7 @@
-﻿namespace Matcher
+﻿namespace ProdLang0
 
 open FParsec
-open Matcher.ProdLang
+open ProdLang
 module Parser =
 
     let wsc = spaces 

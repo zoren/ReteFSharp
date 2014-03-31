@@ -1,9 +1,8 @@
-﻿namespace Matcher
-
-open Matcher.ProdLang
+﻿namespace ProdLang0
 
 module Printer =
     open CoreLib
+    open ProdLang
     let printSystem ({productions = prods} as system)= 
         let sb = new System.Text.StringBuilder()
         let app (s:string) = ignore <| sb.Append(s)

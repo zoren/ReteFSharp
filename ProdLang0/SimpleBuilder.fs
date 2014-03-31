@@ -1,20 +1,27 @@
-﻿namespace Matcher
+﻿namespace ProdLang0
 
 module SimpleBuilder =
     type MetaExp = Var of string | Val of string
     
-    type Condition = MetaExp * MetaExp * MetaExp
+    type exp = 
+        StringConst of string
+        | Variable of string * string
+        | Concat of exp * exp
+            
+    type testExpression = Equals of exp * exp | LessThan of exp * exp    
+
+    type Condition = MetaExp * MetaExp * MetaExp * testExpression list
     type SimpleProduction = Condition list * string
 
    // type Rule = 
-    open ReteData
+    open Matcher.ReteData
     open CoreLib
 
     let getField var (cond:Condition) =
         match cond with
-              (Var v,_,_) when v = var -> Some Identifier
-            | (_,Var v,_) when v = var -> Some Attribute
-            | (_,_,Var v) when v = var -> Some Value
+              (Var v,_,_,_) when v = var -> Some Identifier
+            | (_,Var v,_,_) when v = var -> Some Attribute
+            | (_,_,Var v,_ ) when v = var -> Some Value
             | _ -> None
 
     let rec getOffsetAndField var prevConds =
@@ -28,15 +35,31 @@ module SimpleBuilder =
                             Some (n,f) -> Some(n+1,f)
                             | None -> None
 
+    let mkSimpleEqTest (f1,index,f2) = 
+        REquals(RVariable(Local,f1),RVariable(TokenOffset index,f2))
+
     let calcTests' exp field1 prevConds =
         match exp with
             Var var ->
                 match getOffsetAndField var prevConds with
                     None -> []
-                    | Some (index,field2) -> [mkTest(field1,index,field2)]
+                    | Some (index,field2) -> [mkSimpleEqTest(field1,index,field2)]
             | _ -> []
 
-    let calcTests (id,attr,value) prevConds =
+    let rec translateExp e =
+        match e with
+            StringConst s -> RStringConst s
+//            | Variable (id,var) -> 
+//                let 
+//            RVariable()
+            | Concat (e1,e2) -> RConcat(translateExp e1, translateExp e2)
+
+    let rec translateTest test = 
+        match test with
+            Equals(e1,e2) -> REquals(translateExp e1,translateExp e2)
+            |LessThan(e1,e2) -> RLessThan(translateExp e1,translateExp e2)
+
+    let calcTests (id,attr,value,_) prevConds =
         List.concat [calcTests' id Identifier prevConds;calcTests' attr Attribute prevConds;calcTests' value Value prevConds]
 
     let rec insertSet v vs =
@@ -49,18 +72,25 @@ module SimpleBuilder =
             [] -> [(k,[v])]
             | (k',vs')::l' -> if k = k' then (k,insertSet v vs')::l' else (k',vs')::updateMany l' k v
             
+    let condToOptionTripel (id,attr,value,_) = 
+        let valToString mexp =
+            match mexp with
+                Val s -> Some s
+                | _ -> None
+        (valToString id, valToString attr, valToString value)
+
     let build (conds: Condition list)  =
         let amems = ref []
         let emitAmem c join = amems := updateMany !amems c (mkAlphaMem join)
         
-        let rec simpleToRete conds prevConds = 
+        let rec simpleToRete (conds: Condition list) prevConds = 
             match conds with
                 [] -> mkProd "test"
                 | c :: cs ->
                     let child = simpleToRete cs (c::prevConds)
                     let tests = calcTests c prevConds
                     let join = mkJoin tests [child]
-                    let _ = emitAmem c [join]
+                    let _ = emitAmem (condToOptionTripel c) [join]
                     mkBetaMem [join]
         
         let {children = children} = simpleToRete conds []
@@ -111,3 +141,17 @@ module SimpleBuilder =
         metaExpMatch id wid && metaExpMatch attr wattr && metaExpMatch value wvalue
 
     let lookupAlphaMem l w = List.tryFind ( fun(c,v) -> wmeMatch w c ) l
+
+
+    //
+//    open Matcher.SimpleBuilder    
+//
+//    let act alphas wme =         
+//        match lookupAlphaMem alphas wme with
+//            Some (_,alphaMems) -> List.iter (actMem wme) alphaMems
+//            | None -> failwith "could not find matching condition"
+//
+//    let act2 alphas wme =
+//        match lookupAlphaMem alphas wme with
+//            Some (_,alphaMems) -> actMem wme alphaMems
+//            | None -> failwith "could not find matching condition"

@@ -1,7 +1,7 @@
-﻿namespace Matcher
+﻿namespace ProdLang0
 
 module MultiInstEvaluator =
-    open Matcher.ProdLang
+    open ProdLang
     open CoreLib
     type InstanceId = int
     type Environment = ((InstanceId * Variable) * Value) list
