@@ -65,8 +65,6 @@ module Check =
 
     let _ = Arb.register<ProdLangGenerators>()
 
-
-
     let getComparisonFromCond cond = 
         match cond with
             Eq((obj,var),value) -> Seq.singleton (var,value)

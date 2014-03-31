@@ -10,7 +10,6 @@ module ReteTester =
 
     let assignRete = activateCond alphas
 
-
     let assignReteInt (inst:int)= assignRete ("$" + inst.ToString())
     let assignReteInst0 = assignReteInt 1
     let assignRete1() = assignReteInst0 "X" "1"

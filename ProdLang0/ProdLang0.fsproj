@@ -52,9 +52,9 @@
   <ItemGroup>
     <None Include="Script.fsx" />
     <Compile Include="ProdLang.fs" />
-    <Compile Include="MultiInstEvaluator.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="Printer.fs" />
+    <Compile Include="MultiInstEvaluator.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
     <Compile Include="ReteBuilder.fs" />
