@@ -60,3 +60,5 @@ module ReteBuilder =
     let buildReteFromProductions productions = 
         let filteredProds = Seq.map (fun((conds,prodName):Production) -> (conditionsToNumbers conds, prodName)) productions
         buildSetParents <| buildTrie filteredProds
+
+    let buildReteFromSystem {productions = productions } = buildReteFromProductions productions
