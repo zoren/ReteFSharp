@@ -7,7 +7,7 @@ module Dumper =
     type graphNode = GMem | GJoin | GProd of string | GAlpha | GAlphaRoot
     open CoreLib
     
-    let buildGraphwiz (dumpGraph, alphaConds) =
+    let buildGraphviz (dumpGraph, alphaConds) =
  
         let count = ref 0
         let getIndex () = 
