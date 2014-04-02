@@ -3,7 +3,7 @@
 module ReteBuilder =
     open Matcher.ReteData
     
-    open ProdLang
+    open ProdLang0.ProdLang
     open CoreLib
     
     type VarIndex = int

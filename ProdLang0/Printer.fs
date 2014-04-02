@@ -2,7 +2,7 @@
 
 module Printer =
     open CoreLib
-    open ProdLang
+    open ProdLang0.ProdLang
     let printSystem ({productions = prods} as system)= 
         let sb = new System.Text.StringBuilder()
         let app (s:string) = ignore <| sb.Append(s)
