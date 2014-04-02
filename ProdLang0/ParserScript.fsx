@@ -6,10 +6,10 @@ open FParsec
 
 #load "ProdLang.fs"
 #load "Parser.fs"
-open Matcher.Parser
+open ProdLang0.Parser
 open CoreLib.Util
 #load "Printer.fs"
-open Matcher.Printer
+open ProdLang0.Printer
 
 
 
@@ -26,7 +26,7 @@ let testProdsString = @"
 "
 
 
-let p = run Matcher.Parser.prods testProdsString
+let p = run ProdLang0.Parser.prods testProdsString
 
 
 let parsedProds = testParser prods testProdsString

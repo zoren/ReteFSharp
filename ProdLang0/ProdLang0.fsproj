@@ -55,9 +55,10 @@
     <Compile Include="Parser.fs" />
     <Compile Include="Printer.fs" />
     <Compile Include="MultiInstEvaluator.fs" />
+    <Compile Include="ReteBuilder.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
-    <Compile Include="ReteBuilder.fs" />
+    <None Include="ParserScript.fsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoreLib\CoreLib.fsproj">
