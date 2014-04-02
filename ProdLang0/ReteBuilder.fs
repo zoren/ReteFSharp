@@ -54,7 +54,7 @@ module ReteBuilder =
         
         let getVarValMemTuple = function | (Eq((_,var),value),mem) -> Some ((var,value),mem) | (TRUE,_) -> None
         let _ = setParents rete
-        let _ = List.iter (fun (_,a)->setAlphaMen a) alphas
+        let _ = List.iter (fun (_,a)->setAlphaMem a) alphas
         (rete,List.map (fun ((var,value),mem) -> ((var,value),mem)) alphas)
 
     let buildReteFromProductions productions = 

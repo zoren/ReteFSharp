@@ -76,7 +76,7 @@ module ReteData =
         for child in node.children do
             (child.parent := Some node;setParents child)
 
-    let setAlphaMen (node:alphaMemory) =
+    let setAlphaMem (node:alphaMemory) =
         for succ in node.successors do
             match succ.nodeType with
                 Join jd -> jd.amem := Some node
