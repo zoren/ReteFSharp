@@ -38,8 +38,6 @@ module ReteData =
             successors : reteNode list
         }
 
-//    let nullRete : reteNode option = None
-//    let nullAlpha : alphaMemory option = None
     let rec map f { nodeType = nodeType; children = children } =
         f nodeType (List.map (map f) children)
 
