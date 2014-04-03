@@ -34,16 +34,15 @@ module Dumper =
                         edges := (index,dumpRete child)::!edges
             index
     
-        let dumpAlpha alphaConds = 
+        let dumpAlphaMems alphaMems =
             let alphaRootIndex = emitNode GAlphaRoot
-            for (cond,alphas) in alphaConds do
+            for alphaMem in alphaMems do
                 let alphaIndex = emitNode GAlpha
                 edges := (alphaRootIndex,alphaIndex)::!edges
-                for alpha in alphas do
-                    for child in alpha.children do
-                        let reteIndex = dict.[child]
-                        edges := (alphaIndex,reteIndex)::!edges
-        (ignore <| dumpRete dumpGraph;dumpAlpha alphaConds;(!edges,!nodes))
+                for child in alphaMem.successors do
+                    let reteIndex = dict.[child]
+                    edges := (alphaIndex,reteIndex)::!edges
+        (ignore <| dumpRete dumpGraph;dumpAlphaMems alphaConds;(!edges,!nodes))
 
     let nodeTypeToString nodeType =
         match nodeType with
