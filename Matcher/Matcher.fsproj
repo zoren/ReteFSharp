@@ -53,6 +53,7 @@
     <Compile Include="Runner.fs" />
     <Compile Include="Dumper.fs" />
     <None Include="packages.config" />
+    <None Include="DumperScript.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FParsec">
