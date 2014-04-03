@@ -1,6 +1,6 @@
 ﻿namespace Matcher
 
-open ReteData
+open Matcher.ReteData
 open System.Collections.Generic
 
 module Dumper =
