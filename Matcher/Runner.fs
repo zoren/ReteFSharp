@@ -85,7 +85,8 @@ module Runner =
         let tup = (inst,variable,value)
         let wme = { fields = tup }
         match Util.lookupOpt alphas (variable,value) with
-            Some alphaMem -> 
+            Some alphaMem ->
+                // if wme already assigned do nothing
                 if List.exists ((=)wme) !alphaMem.items then 
                     ()
                 else            
@@ -102,11 +103,3 @@ module Runner =
             Production (prodName,matches) ->
                 (prodName, List.map deMatch (!matches)) :: List.collect getProductionNodes children
             | _ -> List.collect getProductionNodes children
-
-    // simple lang
-
-    let actMem wme alphaMem =
-        if List.exists ((=)wme) !alphaMem.items then 
-            failwith "wme already present in alpha mem"
-        else            
-            alphaMemoryActivation(alphaMem, wme)
