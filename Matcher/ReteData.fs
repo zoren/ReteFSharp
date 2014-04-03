@@ -43,19 +43,7 @@ module ReteData =
 
     let rec iter f { nodeType = nodeType; children = children } =
         f nodeType ;List.iter (iter f) children
-
-    type testTree = TestTreeNode of (fieldOfArg * int * fieldOfArg) list * testTree list
-
-    let deRecTest { fieldOfArg1 = farg1;conditionNumberOfArg2 = cond; fieldOfArg2 = farg2 } = (farg1,cond,farg2)
-
-    let print nodeType children = 
-        match nodeType with
-            Join {tests = tests} -> TestTreeNode (List.map deRecTest tests, children )
-            | _ -> TestTreeNode ([], children )
-    let printTests node = map print node
-    
-
-
+    // construction helpers
     let mkNullParent () = ref None
 
     let mkRete nodeType children = {nodeType = nodeType;children = children;parent = mkNullParent ()}
@@ -72,16 +60,32 @@ module ReteData =
 
     let mkAlphaMem children = {items = ref [];successors = children}   
 
-    let rec setParents (node:reteNode) =
+    // backpointer helpers
+    let rec setParents node =
         for child in node.children do
-            (child.parent := Some node;setParents child)
+            child.parent := Some node
+            setParents child
 
-    let setAlphaMem (node:alphaMemory) =
-        for succ in node.successors do
+    let setAlphaMem alphaMem =
+        for succ in alphaMem.successors do
             match succ.nodeType with
-                Join jd -> jd.amem := Some node
+                Join jd -> jd.amem := Some alphaMem
                 | _ -> ()
 
-    let setBackPointers (reteTopNode,  alphas) =
-      setParents(reteTopNode);
-      List.iter (fun (_,a)->setAlphaMem a) alphas;()
+    let setBackPointers (reteTopNode, alphas) =
+      setParents reteTopNode
+      List.iter (fun (_,a) -> setAlphaMem a) alphas
+
+    let resetBackPointers (reteTopNode, alphas) =
+      let rec resetParents node =
+        for child in node.children do
+          child.parent := None
+          resetParents child
+
+      let resetAlphaMem alphaMem =
+        for succ in alphaMem.successors do
+            match succ.nodeType with
+                Join jd -> jd.amem := None
+                | _ -> ()
+      resetParents reteTopNode
+      List.iter (fun (_,a)-> resetAlphaMem a) alphas
