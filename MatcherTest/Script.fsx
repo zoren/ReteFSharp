@@ -58,6 +58,7 @@ open ProdLang0.MultiInstEvaluator
 
 let getAssignBothFromProds testProds =
     let (reteDummy, alphas) = ProdLang0.ReteBuilder.buildReteFromProductions testProds
+    let _ = Matcher.ReteData.setParents reteDummy
     let mySys = mkSystem testProds
     let myEnv = mkState mySys
     (fun inst var value -> assign myEnv inst var value,

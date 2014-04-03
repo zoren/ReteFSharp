@@ -119,6 +119,7 @@ module Check =
         
         // setup rete
         let (reteDummy, alphas) = ProdLang0.ReteBuilder.buildReteFromProductions prods
+        let _ = Matcher.ReteData.setParents reteDummy
         let assignReteInt (inst:int) = activateCond alphas ("$" + inst.ToString())
         
         // setup classic

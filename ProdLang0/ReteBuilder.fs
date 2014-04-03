@@ -22,6 +22,7 @@ module ReteBuilder =
                                             [] -> 0
                                             | ((_,i)::_) -> i + 1
                             (index,var,value) :: helper ((obj,index)::objectVars) conds
+                | _ -> raise (new System.ArgumentOutOfRangeException(""))
 
         helper [] (List.filter ((<>)TRUE) conds)
     
@@ -49,16 +50,15 @@ module ReteBuilder =
                     | children -> mkBetaMemDummy children
         (rete,List.map (fun (c,joins)->(c,mkAlphaMem joins)) !amems)
 
-    let buildSetParents trie = 
+    let buildFromTrie trie =
         let (rete,alphas) = build trie
         
         let getVarValMemTuple = function | (Eq((_,var),value),mem) -> Some ((var,value),mem) | (TRUE,_) -> None
-        let _ = setParents rete
         let _ = List.iter (fun (_,a)->setAlphaMem a) alphas
         (rete,List.map (fun ((var,value),mem) -> ((var,value),mem)) alphas)
 
     let buildReteFromProductions productions = 
         let filteredProds = Seq.map (fun((conds,prodName):Production) -> (conditionsToNumbers conds, prodName)) productions
-        buildSetParents <| buildTrie filteredProds
+        buildFromTrie <| buildTrie filteredProds
 
     let buildReteFromSystem {productions = productions } = buildReteFromProductions productions
