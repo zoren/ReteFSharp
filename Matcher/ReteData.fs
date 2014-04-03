@@ -81,3 +81,7 @@ module ReteData =
             match succ.nodeType with
                 Join jd -> jd.amem := Some node
                 | _ -> ()
+
+    let setBackPointers (reteTopNode,  alphas) =
+      setParents(reteTopNode);
+      List.iter (fun (_,a)->setAlphaMem a) alphas;()

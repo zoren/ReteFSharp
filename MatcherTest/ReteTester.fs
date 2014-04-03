@@ -5,7 +5,7 @@ open MatcherTest.ExampleProds
 
 module ReteTester =
     let (reteDummy, alphas) = ProdLang0.ReteBuilder.buildReteFromProductions testProds
-    let _ = Matcher.ReteData.setParents reteDummy
+    let _ = Matcher.ReteData.setBackPointers (reteDummy, alphas)
 
     open Matcher.Runner
 
