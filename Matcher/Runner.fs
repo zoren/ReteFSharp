@@ -57,9 +57,6 @@ module Runner =
     
     and rigthActivation(node,w) =
         wrt "right"
-//        if obj.ReferenceEquals( nullRete, node) then
-//            ()
-//        else
         match node with
             {nodeType = Beta _} -> failwith "cannot rigth activate beta memories"
             | {nodeType = Join _} -> joinNodeRightActivation(node, w)
@@ -72,7 +69,7 @@ module Runner =
             | {nodeType = Join _} -> joinNodeLeftActivation (node, t)
             | {nodeType = Production (s,matches)} ->
                 let pp {fields = (o,vr,vl)} = "(" + o + "|" + vr + "|" + vl + ")"
-                let dump = wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
+                let _ = wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
                 matches := (t,w) :: !matches
     
     and alphaMemoryActivation (node:alphaMemory, w:WME) = 
