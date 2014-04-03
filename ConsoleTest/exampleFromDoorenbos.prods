@@ -1,0 +1,4 @@
+O.X = 1 and O.Y = 2 and O.Z = 3 >> P1
+O.X = 1 and O.Y = 2 and O.V = 4 and O.U = 5 >> P2
+O.X = 1 and O.Y = 2 and O.V = 4 and O.Z = 3 >> P3
+O.X = 2 >> P4
