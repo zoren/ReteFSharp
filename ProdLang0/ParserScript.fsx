@@ -40,4 +40,4 @@ let _ = System.Console.WriteLine(printedProds)
 let (rootnode, alphaMems) = ProdLang0.ReteBuilder.buildReteFromSystem parsedProds
 let graph = Matcher.Dumper.buildGraphviz (rootnode, Seq.map (fun (_,mem) -> mem) alphaMems)
 
-let _  = Matcher.Dumper.dumpToFile graph
+let _  = Matcher.Dumper.dumpToFile graph "graph.dot"

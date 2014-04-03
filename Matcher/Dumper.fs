@@ -89,4 +89,4 @@ rankdir=TB;
         let betaCluster = prefixBeta::dumpNodes betaNodes:: dumpEdges betaEdges::"}"::[]
         String.concat "\n" <| "digraph {":: alphaCluster @ rankProds :: betaCluster @ "}"::[]
 
-    let dumpToFile graph = System.IO.File.WriteAllText("graph.dot",dumpGraph graph)
+    let dumpToFile graph path = System.IO.File.WriteAllText(path, dumpGraph graph)
