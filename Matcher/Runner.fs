@@ -11,9 +11,6 @@ module Runner =
             | Attribute -> att
             | Value -> value
 
-    let wrt (s:string) = ()//System.Console.WriteLine(s)
-    let wrt2 (s:string) = System.Console.WriteLine(s)
-
     let rec performJoinTests (tests:testAtJoinNode list, t: token, w:WME)=
         match tests with
             [] -> true
@@ -24,15 +21,12 @@ module Runner =
                 if arg1 <> arg2 then false else performJoinTests (test', t, w)
     
     let rec joinNodeRightActivation({nodeType = Join jd} as node :reteNode,w:WME) = 
-        wrt "joinRight"
         if Option.isNone !node.parent then
-            wrt "joinRightEq"
+            ()
             //for child in node.children do leftActivation(child,[],w)//todo
         else
-            wrt "joinRightNeq"
             let (Some({nodeType = Beta bm} as betaNode)) = !node.parent
             let items = !bm.items
-            wrt ("joinRightNeq" + items.ToString())
             for t in items do
                 if performJoinTests(jd.tests, t,w) then
                     for child in node.children do 
@@ -40,7 +34,6 @@ module Runner =
                 else ()
     
     and joinNodeLeftActivation({nodeType = Join jd} as node :reteNode,t:token) =
-        wrt "joinLeft"
         let alphaMem = Option.get !jd.amem
         for w in !alphaMem.items do
             if performJoinTests (jd.tests, t, w) then
@@ -49,27 +42,23 @@ module Runner =
             else ()
                 
     and betaMemoryLeftActivation ({nodeType = Beta bm} as node :reteNode,t:token,w:WME) =
-        wrt "betaLeft"
         let newToken : token = w::t
         bm.items := newToken :: !bm.items
         for child in node.children do
             leftActivation(child, newToken, w)// there is a bug in Doorenboos here
     
     and rigthActivation(node,w) =
-        wrt "right"
         match node with
             {nodeType = Beta _} -> failwith "cannot rigth activate beta memories"
             | {nodeType = Join _} -> joinNodeRightActivation(node, w)
             | {nodeType = Production _} -> failwith "cannot rigth activate production"
 
     and leftActivation(node,t,w) = 
-        wrt "left"
         match node with
               {nodeType = Beta _} -> betaMemoryLeftActivation (node, t, w)
             | {nodeType = Join _} -> joinNodeLeftActivation (node, t)
             | {nodeType = Production (s,matches)} ->
                 let pp {fields = (o,vr,vl)} = "(" + o + "|" + vr + "|" + vl + ")"
-                let _ = wrt2 ("Left activate " + s + " with token: " + System.String.Join(", ", Seq.map pp t) + " and wme " + pp w)
                 matches := (t,w) :: !matches
     
     and alphaMemoryActivation (node:alphaMemory, w:WME) = 
