@@ -31,10 +31,10 @@ module Dumper =
         let emitEdgeLabel fromIndex toIndex label = edges := (fromIndex, toIndex, label)::!edges
         let emitEdge fromIndex toIndex = emitEdgeLabel fromIndex toIndex ""
 
-        let wmeToString {fields =(inst,var,value)} = inst + "|" + var + "|" + value
-        let tokenToString (token:token) = String.concat ", " <| List.map wmeToString token
-        let tokensToString tokens = String.concat "; " <| List.map tokenToString tokens
-        let justificationsToString justs = String.concat "; " <| List.map (fun (token,wme) -> (tokenToString token)+":"+(wmeToString wme)) justs
+        let wmeToString {fields =(inst,var,value)} = "(" + inst + " " + var + " " + value + ")"
+        let tokenToString (token:token) = String.concat "::" <| List.map wmeToString token
+        let tokensToString tokens = String.concat ", " <| List.map tokenToString tokens
+        let justificationsToString justs = String.concat "" <| List.map (fun (token,wme) -> "{"+(tokenToString token)+":"+(wmeToString wme)+"}\l") justs
 
         let rec dumpRete (node:reteNode) =
             let index = match node.nodeType with
