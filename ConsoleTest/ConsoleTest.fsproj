@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\ConsoleTest.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>exampleFromDoorenbos.prods activateDoorenbos.assign</StartArguments>
+    <StartArguments>simpleExample.prods simpleActivate.assign</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -87,6 +87,11 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <ProjectReference Include="..\MatcherTest\MatcherTest.fsproj">
+      <Name>MatcherTest</Name>
+      <Project>{46f13fac-8331-4288-acc6-976fb9a88cc0}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Matcher\Matcher.fsproj">
       <Name>Matcher</Name>
       <Project>{f676b119-518a-4578-928d-92b12fc1bb67}</Project>
