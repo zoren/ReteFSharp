@@ -20,20 +20,16 @@ module Runner =
                 let arg2 = pickSymbol wme2 thisTest.fieldOfArg2
                 if arg1 <> arg2 then false else performJoinTests (test', t, w)
     
-    let rec joinNodeRightActivation({nodeType = Join jd} as node :reteNode,w:WME) = 
-        if Option.isNone !node.parent then
-            ()
-            //for child in node.children do leftActivation(child,[],w)//todo
-        else
-            let (Some({nodeType = Beta bm} as betaNode)) = !node.parent
-            let items = !bm.items
-            for t in items do
-                if performJoinTests(jd.tests, t,w) then
-                    for child in node.children do 
-                    leftActivation(child, t, w)
-                else ()
+    let rec joinNodeRightActivation({nodeType = Join jd} as node, w:WME) =
+        let (Some({nodeType = Beta bm} as betaNode)) = !node.parent
+        let items = !bm.items
+        for t in items do
+            if performJoinTests(jd.tests, t, w) then
+                for child in node.children do
+                leftActivation(child, t, w)
+            else ()
     
-    and joinNodeLeftActivation({nodeType = Join jd} as node :reteNode,t:token) =
+    and joinNodeLeftActivation({nodeType = Join jd} as node, t:token) =
         let alphaMem = Option.get !jd.amem
         for w in !alphaMem.items do
             if performJoinTests (jd.tests, t, w) then
@@ -41,7 +37,7 @@ module Runner =
                     leftActivation(child, t, w)
             else ()
                 
-    and betaMemoryLeftActivation ({nodeType = Beta bm} as node :reteNode,t:token,w:WME) =
+    and betaMemoryLeftActivation ({nodeType = Beta bm} as node, t:token, w:WME) =
         let newToken : token = w::t
         bm.items := newToken :: !bm.items
         for child in node.children do
@@ -57,11 +53,10 @@ module Runner =
         match node with
               {nodeType = Beta _} -> betaMemoryLeftActivation (node, t, w)
             | {nodeType = Join _} -> joinNodeLeftActivation (node, t)
-            | {nodeType = Production (s,matches)} ->
+            | {nodeType = Production (s, matches)} ->
                 matches := (t,w) :: !matches
     
     and alphaMemoryActivation (node:alphaMemory, w:WME) = 
         node.items := w :: !node.items
         for child in node.successors do
             rigthActivation (child, w)
-

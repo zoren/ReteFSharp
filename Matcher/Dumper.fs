@@ -38,7 +38,7 @@ module Dumper =
 
         let rec dumpRete (node:reteNode) =
             let index = match node.nodeType with
-                            Beta bm -> emitNode (GMem (tokensToString (!bm.items)))
+                            Beta bm -> emitNode <| GMem (tokensToString (!bm.items))
                             | Join jd -> emitNode GJoin
                             | Production (s,justification) -> emitNode <| GProd (s,justificationsToString !justification)
             let _ = dict.Add(node,index)
