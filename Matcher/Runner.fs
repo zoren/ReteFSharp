@@ -58,34 +58,10 @@ module Runner =
               {nodeType = Beta _} -> betaMemoryLeftActivation (node, t, w)
             | {nodeType = Join _} -> joinNodeLeftActivation (node, t)
             | {nodeType = Production (s,matches)} ->
-                let pp {fields = (o,vr,vl)} = "(" + o + "|" + vr + "|" + vl + ")"
                 matches := (t,w) :: !matches
     
     and alphaMemoryActivation (node:alphaMemory, w:WME) = 
         node.items := w :: !node.items
         for child in node.successors do
             rigthActivation (child, w)
-    
-    // prodlang specific
-    let activateCond alphas inst variable value =
-        let tup = (inst,variable,value)
-        let wme = { fields = tup }
-        match Util.lookupOpt alphas (variable,value) with
-            Some alphaMem ->
-                // if wme already assigned do nothing
-                if List.exists ((=)wme) !alphaMem.items then 
-                    ()
-                else            
-                    alphaMemoryActivation(alphaMem, wme)
-            | None -> ()
 
-    let rec getProductionNodes ({nodeType = nodeType;children = children} as node) : (string * (int * string * string) list list) list =
-        let deWME ({fields = (instString,var,value)}) = 
-            let inst = System.Int32.Parse(instString.Substring(1))
-            (inst,var,value)
-        let deToken token = List.map deWME token
-        let deMatch (token, wme) = (List.rev (deToken token)) @ [deWME wme]
-        match nodeType with
-            Production (prodName,matches) ->
-                (prodName, List.map deMatch (!matches)) :: List.collect getProductionNodes children
-            | _ -> List.collect getProductionNodes children

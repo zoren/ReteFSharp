@@ -12,7 +12,7 @@ let generatePNGfromDot dotFilePath pngFilePath =
 let generateWithAssignments ((rootnode, alphaMems) as graph) assignments = 
     Matcher.ReteData.setBackPointers graph
     for (inst, var, value) in assignments do
-      Matcher.Runner.activateCond alphaMems inst var value
+      MatcherTest.ReteTester.activateCond alphaMems inst var value
     Matcher.ReteData.resetBackPointers graph
     Matcher.Dumper.buildGraphviz (rootnode, alphaMems)
 

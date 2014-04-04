@@ -3,6 +3,7 @@
 module Check = 
     open ProdLang0.ProdLang
     open FsCheck
+    open MatcherTest.ReteTester
     
     type Tree = Leaf of int | Branch of Tree * Tree
 

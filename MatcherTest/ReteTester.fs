@@ -4,6 +4,32 @@ open MatcherTest.ExampleProds
 
 
 module ReteTester =
+    open Matcher.ReteData
+    open Matcher.Runner
+
+    let activateCond alphas inst variable value =
+        let tup = (inst,variable,value)
+        let wme = { fields = tup }
+        match CoreLib.Util.lookupOpt alphas (variable,value) with
+            Some alphaMem ->
+                // if wme already assigned do nothing
+                if List.exists ((=)wme) !alphaMem.items then
+                    ()
+                else
+                    alphaMemoryActivation(alphaMem, wme)
+            | None -> ()
+
+    let rec getProductionNodes ({nodeType = nodeType;children = children} as node) : (string * (int * string * string) list list) list =
+        let deWME ({fields = (instString,var,value)}) =
+            let inst = System.Int32.Parse(instString.Substring(1))
+            (inst,var,value)
+        let deToken token = List.map deWME token
+        let deMatch (token, wme) = (List.rev (deToken token)) @ [deWME wme]
+        match nodeType with
+            Production (prodName,matches) ->
+                (prodName, List.map deMatch (!matches)) :: List.collect getProductionNodes children
+            | _ -> List.collect getProductionNodes children
+
     let (reteDummy, alphas) = ProdLang0.ReteBuilder.buildReteFromProductions testProds
     let _ = Matcher.ReteData.setBackPointers (reteDummy, alphas)
 
