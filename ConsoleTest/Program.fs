@@ -11,10 +11,20 @@ let generatePNGfromDot dotFilePath pngFilePath =
 
 let generateWithAssignments ((rootnode, alphaMems) as graph) assignments = 
     Matcher.ReteData.setBackPointers graph
+    let activatedEdges = ref []
+    let loggingRunner = new Matcher.LoggingRunner(fun activatedEdge -> activatedEdges := activatedEdge :: !activatedEdges)
     for (inst, var, value) in assignments do
-      MatcherTest.ReteTester.activateCond alphaMems inst var value
+      match MatcherTest.ReteTester.lookupAlphaMem alphaMems var value with
+        Some alphaMem ->
+                let tup = (inst,var,value)
+                let wme = { Matcher.ReteData.fields = tup }
+                if List.exists ((=)wme) !alphaMem.items then
+                    ()
+                else
+                    loggingRunner.activateAlphaMemory(alphaMem, inst, var, value)
+        | None -> raise (System.ArgumentException("No alpha memory matches assignment."))
     Matcher.ReteData.resetBackPointers graph
-    Matcher.Dumper.buildGraphviz (rootnode, alphaMems)
+    Matcher.Dumper.buildGraphviz (rootnode, alphaMems, !activatedEdges)
 
 let assignmentsToString assignments = String.concat "\l" <| Seq.map (fun(inst,var,value) -> inst + "." + var + " := " + value) assignments
 

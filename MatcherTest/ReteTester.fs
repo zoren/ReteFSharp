@@ -2,10 +2,12 @@
 
 open MatcherTest.ExampleProds
 
-
 module ReteTester =
     open Matcher.ReteData
-    open Matcher.Runner
+    open Matcher
+
+    let lookupAlphaMem (alphas:((symbol * symbol) * alphaMemory) list) variable value =
+      CoreLib.Util.lookupOpt alphas (variable,value)
 
     let activateCond alphas inst variable value =
         let tup = (inst,variable,value)
@@ -16,7 +18,8 @@ module ReteTester =
                 if List.exists ((=)wme) !alphaMem.items then
                     ()
                 else
-                    alphaMemoryActivation(alphaMem, wme)
+                    let runner = new Runner()
+                    runner.activateAlphaMemory(alphaMem, wme)
             | None -> ()
 
     let rec getProductionNodes ({nodeType = nodeType;children = children} as node) : (string * (int * string * string) list list) list =
@@ -33,7 +36,7 @@ module ReteTester =
     let (reteDummy, alphas) = ProdLang0.ReteBuilder.buildReteFromProductions testProds
     let _ = Matcher.ReteData.setBackPointers (reteDummy, alphas)
 
-    open Matcher.Runner
+    open Matcher
 
     let assignRete = activateCond alphas
 
