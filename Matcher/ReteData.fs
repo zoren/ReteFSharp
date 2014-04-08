@@ -89,3 +89,5 @@ module ReteData =
                 | _ -> ()
       resetParents reteTopNode
       List.iter (fun (_,a)-> resetAlphaMem a) alphas
+
+    type WMEPattern = WMEAnyThing | WMEValue of string

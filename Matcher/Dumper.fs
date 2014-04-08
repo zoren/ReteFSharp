@@ -60,26 +60,29 @@ module Dumper =
             | Attribute -> "attr"
             | Value -> "val"
         let testToString {fieldOfArg1 = f1;conditionNumberOfArg2 = condNum;fieldOfArg2 = f2} =
-          "." + (fieldToString f1) + " = t[" + condNum.ToString()  + "]." + (fieldToString f2)
+          "." + (fieldToString f1) + " = t[" + condNum.ToString()  + "]." + (fieldToString f2) + "\l"
 
         let rec dumpRete (node:reteNode) =
             let graphNode = match node.nodeType with
                               Beta bm -> GMem (tokensToString (!bm.items))
-                              | Join jd -> GJoin <| String.concat " " (Seq.map testToString jd.tests)
+                              | Join jd -> GJoin <| String.concat "" (Seq.map testToString jd.tests)
                               | Production (s,justification) -> GProd (s,justificationsToString !justification)
             let index = emitNode graphNode
             dict.Add(node,index)
             for child in node.children do
                 emitEdgeWithNode (node,index) (child,dumpRete child)
             index
-
+        let patternToString pattern =
+          match pattern with
+            WMEAnyThing -> "*"
+            | WMEValue v -> v
         let dumpAlphaMems alphaConds =
             let alphaRootIndex = emitNode GAlphaRoot
             for ((var:string,value), alphaMem) in alphaConds do
               let alphaLabel = String.concat ", " <| List.map wmeToString (!alphaMem.items)
               let alphaIndex = emitNode (GAlpha alphaLabel)
 
-              emitEdgeLabel alphaRootIndex alphaIndex (var + " = " + value)
+              emitEdgeLabel alphaRootIndex alphaIndex (var + " = " + (patternToString value))
               for child in alphaMem.successors do
                   let reteIndex = dict.[child]
                   emitAlphaEdgeWithNode (alphaMem,alphaIndex) (child,reteIndex)
