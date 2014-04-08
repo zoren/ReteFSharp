@@ -3,7 +3,7 @@
 module Printer =
     open CoreLib
     open ProdLang0.ProdLang
-    let printSystem ({productions = prods} as system)= 
+    let printSystem ({productions = prods} as system)=
         let sb = new System.Text.StringBuilder()
         let app (s:string) = ignore <| sb.Append(s)
 
@@ -15,6 +15,6 @@ module Printer =
         let pconds conds = Util.seqJoin "and " (Seq.map pcond conds)
 
         let pprod (conds,prodName) = Seq.append (pconds conds) (seq [">> " ;prodName])
-        
+
         let strings = Util.seqJoin "\n" (Seq.map pprod prods)
         ((Seq.iter app strings);sb.ToString())

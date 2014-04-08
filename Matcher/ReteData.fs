@@ -8,7 +8,7 @@ module ReteData =
 
     type fieldOfArg = Identifier | Attribute | Value
 
-    type testAtJoinNode = 
+    type testAtJoinNode =
         {
             fieldOfArg1 : fieldOfArg
             conditionNumberOfArg2 : int
@@ -17,7 +17,7 @@ module ReteData =
 
     type BetaMemory = { items : token list ref }
 
-    type NodeType = 
+    type NodeType =
         Beta of BetaMemory
         | Join of joinData
         | Production of string * (token * WME) list ref
@@ -25,7 +25,7 @@ module ReteData =
         {
             amem : alphaMemory option ref
             tests : testAtJoinNode list
-        }        
+        }
     and reteNode =
         {
             nodeType : NodeType
@@ -47,18 +47,18 @@ module ReteData =
     let mkNullParent () = ref None
 
     let mkRete nodeType children = {nodeType = nodeType;children = children;parent = mkNullParent ()}
-     
+
     let mkProd s = mkRete (Production (s, ref [])) []
-    
+
     let mkTest (farg1,cond,farg2) = { fieldOfArg1 = farg1;conditionNumberOfArg2 = cond; fieldOfArg2 = farg2 }
 
     let mkNullAlpha () = ref None
     let mkJoin tests children = mkRete (Join {tests = tests;amem = mkNullAlpha ()}) children
-    
+
     let mkBetaMem children = mkRete (Beta {items = ref []}) children
     let mkBetaMemDummy children = mkRete (Beta {items = ref [[]]}) children
 
-    let mkAlphaMem children = {items = ref [];successors = children}   
+    let mkAlphaMem children = {items = ref [];successors = children}
 
     // backpointer helpers
     let rec setParents node =
