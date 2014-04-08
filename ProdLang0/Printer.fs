@@ -7,10 +7,12 @@ module Printer =
         let sb = new System.Text.StringBuilder()
         let app (s:string) = ignore <| sb.Append(s)
 
+        let pexp = function |ExpValue value -> value.ToString() | ExpVariable var -> var
+
         let pcond c =
             match c with
                 TRUE -> Seq.singleton "true "
-                | Eq((o,var),value) -> seq [o;".";var;" = "; value; " "]
+                | Eq((o,var),exp) -> seq [o;".";var;" = "; pexp exp; " "]
 
         let pconds conds = Util.seqJoin "and " (Seq.map pcond conds)
 

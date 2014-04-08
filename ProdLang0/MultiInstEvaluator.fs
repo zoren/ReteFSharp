@@ -25,9 +25,9 @@ module MultiInstEvaluator =
             (Eq((objVar,var),value)) ->
                 match Util.lookupOpt objMap objVar with
                     Some inst ->
-                        if Seq.exists ((=) ((inst, var),value)) env then
-                             Some (inst,var, value)
-                        else None
+                        match Util.lookupOpt env (inst,var) with
+                          Some value -> Some (inst,var, value)
+                          | None -> None
                     | None -> None
             | TRUE -> None
 
@@ -43,12 +43,12 @@ module MultiInstEvaluator =
                         | None -> None
         Seq.choose (tryGetEvalObjMapEnvConds conds) objMaps
 
-    type ProductionState = (int * string * string) list
-    type ProductionsState = (string * ProductionState list) list
+    type ProductionState = (InstanceId * Variable * Value) list
+    type ProductionsState = (ProductionId * ProductionState list) list
     let evalStateList { env = env; system = {productions = productions}} : ProductionsState =
         List.map (fun (conds,prodName) -> (prodName,Seq.toList <| tryGetEvalEnvConds conds !env)) productions
     let mkSystem prods = {productions = prods}
-    
+
     let mkState sys = {env = ref []; system = sys}
 
     let getNextInstance {env = envRef } =
