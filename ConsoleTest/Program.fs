@@ -15,15 +15,18 @@ let generateWithAssignments ((rootnode, alphaMems) as graph) assignments =
     let loggingRunner = new Matcher.LoggingRunner(fun activatedEdge -> activatedEdges := activatedEdge :: !activatedEdges)
 
     for (inst, var, value) in assignments do
-      match MatcherTest.ReteTester.lookupAlphaMem alphaMems var value with
-        Some alphaMem ->
-                let tup = (inst,var,value)
-                let wme = { Matcher.ReteData.fields = tup }
-                if List.exists ((=)wme) !alphaMem.items then
-                    ()
-                else
-                    loggingRunner.activateAlphaMemory(alphaMem, inst, var, value)
-        | None -> raise (System.ArgumentException("No alpha memory matches assignment."))
+      let matchingAlphas = MatcherTest.ReteTester.matchAlphaMems alphaMems var value
+      let activateAlphaMem (alphaMem:Matcher.ReteData.alphaMemory) =
+        let tup = (inst,var,value)
+        let wme = { Matcher.ReteData.fields = tup }
+        if List.exists ((=)wme) !alphaMem.items then
+            ()
+        else
+            loggingRunner.activateAlphaMemory(alphaMem, inst, var, value)
+      match matchingAlphas with
+         [] -> raise (System.ArgumentException("No alpha memory matches assignment."))
+         | _ -> Seq.iter (fun(_,alpha) -> activateAlphaMem alpha) matchingAlphas
+
     Matcher.ReteData.resetBackPointers graph
     Matcher.Dumper.buildGraphviz (rootnode, alphaMems, !activatedEdges)
 
