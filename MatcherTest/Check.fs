@@ -34,10 +34,11 @@ module Check =
 
     let objVar : Gen<ObjectVar> = Gen.map2 (fun obj value -> (obj, value)) objectVariable variable
 
-    let valueGen : Gen<Value> = Gen.elements <| Seq.map (fun i -> i.ToString())[1;2;3;4;5;6;7]
+    let valueGen : Gen<string> = Gen.elements <| Seq.map (fun i -> (i.ToString()))[1;2;3;4;5;6;7]
 //        Gen.frequency <|
 //            Seq.map (fun(freq,v)->(freq, Gen.constant v))[(50,"1");(25,"2");(12,"3");(5,"4");(5,"5");(2,"6")]
-    let eqCondition = Gen.map2 (fun obj value -> Eq(obj, value)) objVar valueGen
+    let expGen : Gen<ConditionExpression> = Gen.frequency [(3,Gen.map ExpValue valueGen);(1,Gen.map ExpVariable variable)]
+    let eqCondition = Gen.map2 (fun obj value -> Eq(obj, value)) objVar expGen
     let condition = Gen.frequency [(98,eqCondition)] //todo  ;(2,Gen.constant TRUE)]
     //let conditions = Gen.listOf condition
     let conditions = Gen.sized (fun size -> Gen.nonEmptyListOf condition)
@@ -67,7 +68,7 @@ module Check =
 
     let getComparisonFromCond cond =
         match cond with
-            Eq((obj,var),value) -> Seq.singleton (var,value)
+            Eq((obj,var),ExpValue value) -> Seq.singleton (var,value)
             | TRUE -> Seq.empty
 
     open CoreLib
@@ -140,7 +141,7 @@ module Check =
         //let myEnv = !myEnv.env
         let condSatisfied c =
             match c with
-                Eq((_,var),value) when List.exists (fun ((_,var'),value')-> var = var' && value = value') (!myEnv.env) -> true
+                Eq((_,var),ExpValue value) when List.exists (fun ((_,var'),value')-> var = var' && value = value') (!myEnv.env) -> true
                 | TRUE -> true
                 | _ -> false
 
@@ -161,7 +162,7 @@ module Check =
         let rec getAssign localEnv cl =
             match cl with
                   [] -> None
-                | (Eq((obj,var),value)) :: cl' ->
+                | (Eq((obj,var), ExpValue value)) :: cl' ->
                     match tryLookup localEnv obj with
                         Some (_,prevInst) ->
                             match List.tryFind (fun ((einst,evar),evalue) -> einst = prevInst && var = evar && evalue = value) (!myEnv.env) with
