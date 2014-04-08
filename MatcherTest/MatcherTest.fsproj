@@ -49,8 +49,6 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="ExampleProds.fs" />
-    <Compile Include="ProdLangEvalTester.fs" />
     <Compile Include="ReteTester.fs" />
     <Compile Include="Check.fs" />
     <None Include="Script.fsx" />
